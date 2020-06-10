@@ -1,0 +1,701 @@
+<html>
+	<head>
+		<title>Google Map Longitude Latitude Distance</title>
+		
+		<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+  <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js'></script>
+		<script src="if_gmap.js"></script>
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"></script>
+		<META name="description" content="Use this tool to identify get the distance between two points Google Maps"></META>
+		<META name="keywords" content="distance,google maps,google map,google maps api v3,gmap,longitude,latitude,location,point,coordinates"></META>
+		
+		<script> 
+    $(function(){
+      $("#includedContent").load("form.html"); 
+    });
+    </script>
+	<style>
+	
+	* {
+  box-sizing: border-box;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 25%;
+  padding: 10px;
+  height: 100px; /* Should be removed. Only for demonstration */
+
+}
+
+.map-column{
+  float: left;
+  width: 50%;
+  padding: 10px;
+
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+	
+	#radioBtn .notActive{
+    color: #3276b1;
+    background-color: #fff;
+}
+/*custom font*/
+@import url(https://fonts.googleapis.com/css?family=Montserrat);
+
+/*basic reset*/
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    height: 100%;
+    background: #6441A5; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to left, #6441A5, #2a0845); /* Chrome 10-25, Safari 5.1-6 */
+}
+
+body {
+    font-family: montserrat, arial, verdana;
+    background: transparent;
+}
+
+/*form styles*/
+#msform {
+    text-align: center;
+    position: relative;
+    margin-top: 30px;
+}
+
+#msform fieldset {
+    background: white;
+    border: 0 none;
+    border-radius: 0px;
+    box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
+    padding: 20px 30px;
+    box-sizing: border-box;
+    width: 80%;
+    margin: 0 10%;
+
+    /*stacking fieldsets above each other*/
+    position: relative;
+}
+
+/*Hide all except first fieldset*/
+#msform fieldset:not(:first-of-type) {
+    display: none;
+}
+
+/*inputs*/
+#msform input, #msform textarea {
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 0px;
+    margin-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: montserrat;
+    color: #2C3E50;
+    font-size: 13px;
+}
+
+#msform input:focus, #msform textarea:focus {
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    border: 1px solid #ee0979;
+    outline-width: 0;
+    transition: All 0.5s ease-in;
+    -webkit-transition: All 0.5s ease-in;
+    -moz-transition: All 0.5s ease-in;
+    -o-transition: All 0.5s ease-in;
+}
+
+/*buttons*/
+#msform .action-button {
+    width: 100px;
+    background: #ee0979;
+    font-weight: bold;
+    color: white;
+    border: 0 none;
+    border-radius: 25px;
+    cursor: pointer;
+    padding: 10px 5px;
+    margin: 10px 5px;
+}
+
+#msform .action-button:hover, #msform .action-button:focus {
+    box-shadow: 0 0 0 2px white, 0 0 0 3px #ee0979;
+}
+
+#msform .action-button-previous {
+    width: 100px;
+    background: #C5C5F1;
+    font-weight: bold;
+    color: white;
+    border: 0 none;
+    border-radius: 25px;
+    cursor: pointer;
+    padding: 10px 5px;
+    margin: 10px 5px;
+}
+
+#msform .action-button-previous:hover, #msform .action-button-previous:focus {
+    box-shadow: 0 0 0 2px white, 0 0 0 3px #C5C5F1;
+}
+
+/*headings*/
+.fs-title {
+    font-size: 18px;
+    text-transform: uppercase;
+    color: #2C3E50;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+
+.fs-subtitle {
+    font-weight: normal;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/*progressbar*/
+#progressbar {
+    margin-bottom: 30px;
+    overflow: hidden;
+    /*CSS counters to number the steps*/
+    counter-reset: step;
+}
+
+#progressbar li {
+    list-style-type: none;
+    color: white;
+    text-transform: uppercase;
+    font-size: 9px;
+    width: 33.33%;
+    float: left;
+    position: relative;
+    letter-spacing: 1px;
+}
+
+#progressbar li:before {
+    content: counter(step);
+    counter-increment: step;
+    width: 24px;
+    height: 24px;
+    line-height: 26px;
+    display: block;
+    font-size: 12px;
+    color: #333;
+    background: white;
+    border-radius: 25px;
+    margin: 0 auto 10px auto;
+}
+
+/*progressbar connectors*/
+#progressbar li:after {
+    content: '';
+    width: 100%;
+    height: 2px;
+    background: white;
+    position: absolute;
+    left: -50%;
+    top: 9px;
+    z-index: -1; /*put it behind the numbers*/
+}
+
+#progressbar li:first-child:after {
+    /*connector not needed before the first step*/
+    content: none;
+}
+
+/*marking active/completed steps green*/
+/*The number of the step and the connector before it = green*/
+#progressbar li.active:before, #progressbar li.active:after {
+    background: #ee0979;
+    color: white;
+}
+
+
+/* Not relevant to this form */
+.dme_link {
+    margin-top: 30px;
+    text-align: center;
+}
+.dme_link a {
+    background: #FFF;
+    font-weight: bold;
+    color: #ee0979;
+    border: 0 none;
+    border-radius: 25px;
+    cursor: pointer;
+    padding: 5px 25px;
+    font-size: 12px;
+}
+
+.dme_link a:hover, .dme_link a:focus {
+    background: #C5C5F1;
+    text-decoration: none;
+}
+
+.rcorners2 {
+  border-radius: 25px;
+  border: 2px solid #B0B0B0;
+  padding: 20px;
+ 
+}
+#customers {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#customers td, #customers th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#customers tr:nth-child(even){background-color: #f2f2f2;}
+#customers tr:nth-child(odd){background-color: #f2f2f2;}
+
+#customers tr:hover {background-color: #ddd;}
+
+#customers th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #000000;
+  color: white;
+}
+</style>
+	
+	</head>
+	<body bgcolor="#FFFFEF" onload="if_gmap_init();"><center>
+	<form action="http://www.google.com/cse" id="cse-search-box" target="_blank">
+		<table border=0 cellspacing=0 cellpadding=2>
+			<tbody>
+               <!--                  <tr>
+                                        <td colspan=2 align=center>
+					          <font size=5><b>Google Map Longitude Latitude Distance</b></font><br>
+					          <i>(using google maps api v3)</i>
+                                         </td>
+                                 </tr>
+				<tr>
+				<td valign=top width=200>
+					<i>Use this tool to identify get the approximate distance between two points on Google Maps.</i>
+					<br><br>
+					<font size=1>(specify coordinates and click "Jump to Location")</font><br/>
+					<table border=0 bgcolor=#FFA0A0 width=100%>
+						<tr>
+							<td colspan=2>
+								Move Red Marker<input type=radio checked name='rdomarker' id='red' onchange='if_gmap_checkicon();'>:
+							</td>
+						</tr>
+						<tr>
+							<td valign=top>Longitude:</td>
+							<td><input size=10 type=text value="120.989733" id="longval"><br>(e.g. 120.994260)</td>
+						</tr>
+						<tr>
+							<td valign=top>Latitude:</td>
+							<td><input size=10 type=text value="14.598256" id="latval"><br>(e.g. 14.593999)</td>
+						</tr>
+						<tr>
+							<td colspan=2 align=center>
+								<input type=button value="Jump to location" onclick="if_gmap_loadpicker(1);">
+							</td>
+						</tr>
+					</table> 
+                                        <br/>
+					<table border=0 bgcolor=#729aff width=100%>
+						<tr>
+							<td colspan=2>
+								Move Blue Marker<input type=radio name='rdomarker' id='blue' onchange='if_gmap_checkicon();'>:
+							</td>
+						</tr>
+						<tr>
+							<td valign=top>Longitude:</td>
+							<td><input size=10 type=text value="120.994260" id="longval2"><br>(e.g. 120.994260)</td>
+						</tr>
+						<tr>
+							<td valign=top>Latitude:</td>
+							<td><input size=10 type=text value="14.593999" id="latval2"><br>(e.g. 14.593999)</td>
+						</tr>
+						<tr>
+							<td colspan=2 align=center>
+								<input type=button value="Jump to location" onclick="if_gmap_loadpicker(2);">
+							</td>
+						</tr>
+					</table>  
+					<br>
+					<table border=0 bgcolor=#A0FFA0 width=100%>
+						<tr>
+							<td valign=top colspan=2>Approximate Distance:</td>
+							
+						</tr>
+						<tr>
+							<td id="distresult" align=right>0.00</td>
+							<td><select id=unittype onchange="if_gmap_getdistance();"><option value="0.621371192">miles</option><option value="1000">meters</option><option value="1">kilometers</option></td>
+						</tr>
+					</table>
+					
+					<a href="http://www.movable-type.co.uk/scripts/latlong.html" target="_blank">approximation formula</a><br><br>
+				</td>
+				<td id="maparea" style="background-color: #E0E0E0;" valign=top>
+					<center>Click on the map below change marker positions<br/></center>
+					<center>Click on the marker to make it active</center>
+					 -->
+				<!--	<div id="mapitems" style="width: 480px; height: 540px"></div> -->
+				</td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
+	<!-- MultiStep Form -->
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <form id="msform">
+            <!-- progressbar -->
+            <ul id="progressbar">
+                <li class="active">Package Details</li>
+                <li>Vehicle to Ship</li>
+                <li>Select Source And Destination</li>
+            </ul>
+            <!-- fieldsets -->
+            <fieldset>
+                <h2 class="fs-title">Package Details</h2>
+                <h3 class="fs-subtitle">Enter the Package Details</h3>
+                <input type="text" name="fname" placeholder="Height (cm)"/>
+                <input type="text" name="lname" placeholder="Width (cm)"/>
+                <input type="text" name="phone" placeholder="Depth (cm)"/>
+				<input type="text" name="weight" placeholder="Weight (kg)"/>
+				
+                <input type="button" name="next" class="next action-button" value="Next" onclick="myFunction()"/>
+            </fieldset>
+            <fieldset>
+			<script>
+function myFunction() {
+  var x = document.getElementsByName("fname")[0].value;
+  document.getElementById("demo").innerHTML = x;
+  console.log(x)
+}
+</script>
+
+                <h2 class="fs-title">Vehicle to Ship</h2>
+                <h3 class="fs-subtitle">Select the Vehicle On which the package should be shipped</h3>
+				<p id="demo"></p>
+				
+ 
+
+<div class="row">
+  <div class="column"><div class="form-check">
+  <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
+  <label class="form-check-label" for="exampleRadios1">
+    Motorcycle
+  </label>
+</div></div>
+  <div class="column"><div class="form-check">
+  <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
+  <label class="form-check-label" for="exampleRadios2">
+    Sedan
+  </label>
+</div></div>
+  <div class="column"><div class="form-check">
+  <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="option3">
+  <label class="form-check-label" for="exampleRadios3">
+    Truck
+  </label>
+</div> </div>
+  <div class="column"><div class="form-check">
+  <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="option3">
+  <label class="form-check-label" for="exampleRadios3">
+    Van
+  </label>
+</div></div>
+</div>
+
+           <!--     <input type="radio" name="Motorcycle" placeholder="Motorcycle"title="Motorcycle"> Motorcycle </input>
+                <input type="text" name="Sedan" placeholder="Sedan"/>
+                <input type="text" name="Truck" placeholder="Truck"/>
+				<input type="text" name="Van" placeholder="Van"/> -->
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                <input type="button" name="next" class="next action-button" value="Next"/>
+            </fieldset>
+            <fieldset>
+                <h2 class="fs-title">Select Source And Destination</h2>
+                <h3 class="fs-subtitle">Select source and destination of the package</h3>
+				<div class='row'>
+				<div id="mapitems" style="width: 100%; height: 100%"></div>
+				</div>
+				<br></br>
+				
+				<h3 class="fs-subtitle"><strong>Select Source and destination from the map above </strong></h3>
+				<h3 class="fs-subtitle"><strong>OR</strong></h3>
+				<h3 class="fs-subtitle"><strong>Enter Source And destination longitude and latitude to calculate distance </strong></h3>
+				<div class="row">
+				<div class="map-column">
+				<div style="display: inline-block;">
+				<h3>Select Red Marker</h3>
+							<input type=radio checked name='rdomarker' id='red' onchange='if_gmap_checkicon();' style="margin-top: 20px;">:
+				</div>				
+				<table border=0 width=100%  class="rcorners2">
+						
+						<tr>
+							<td valign=top>Longitude:</td>
+							<td><input size=10 type=text value="120.989733" id="longval"><br></td>
+						</tr>
+						<tr>
+							<td valign=top>Latitude:</td>
+							<td><input size=10 type=text value="14.598256" id="latval"><br></td>
+						</tr>
+						<tr>
+							<td colspan=2 align=center>
+								<input type=button value="Jump to location" onclick="if_gmap_loadpicker(1);">
+							</td>
+						</tr>
+					</table>
+					</div>
+					<div class="map-column">
+					<h3>Select Blue Marker</h3>
+					<input type=radio name='rdomarker' id='blue' onchange='if_gmap_checkicon();' style="margin-top: 20px;">:
+					<table border=0 class="rcorners2" width=100%>
+						
+						<tr>
+							<td valign=top>Longitude:</td>
+							<td><input size=10 type=text value="120.994260" id="longval2"><br></td>
+						</tr>
+						<tr>
+							<td valign=top>Latitude:</td>
+							<td><input size=10 type=text value="14.593999" id="latval2"><br></td>
+						</tr>
+						<tr>
+							<td colspan=2 align=center>
+								<input type=button value="Jump to location" onclick="if_gmap_loadpicker(2);">
+							</td>
+						</tr>
+					</table>
+					</div>
+				</div>	
+				<div class="row">
+				<div class="map-column">
+				<div >
+				<h3>Distance</h3>
+				</div>
+				<table border=0  class="rcorners2"  style="margin-left: 156px;
+    margin-top: 16px;">
+						<div>
+						
+						<tr>
+							<td id="distresult" align=center>0.00</td>
+							<td><select id=unittype onchange="if_gmap_getdistance();"><option value="0.621371192">miles</option><option value="1000">meters</option><option value="1">kilometers</option></td>
+						</tr>
+						</div>
+					</table>
+					</div>
+				</div>
+				
+                <input type="text" name="email" placeholder="Email"/>
+                <input type="password" name="pass" placeholder="Password"/>
+                <input type="password" name="cpass" placeholder="Confirm Password"/>
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                <input type="submit" name="submit" class="submit action-button" value="Submit"/>
+            </fieldset>
+        </form>
+        <!-- link to designify.me code snippets -->
+        
+        <!-- /.link to designify.me code snippets -->
+    </div>
+</div>
+<!-- /.MultiStep Form -->
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">First</th>
+      <th scope="col">Last</th>
+      <th scope="col">Handle</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>Jacob</td>
+      <td>Thornton</td>
+      <td>@fat</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td colspan="2">Larry the Bird</td>
+      <td>@twitter</td>
+    </tr>
+  </tbody>
+</table>
+<table id="customers">
+  <tr>
+    <th>Company</th>
+    <th>Contact</th>
+    <th>Country</th>
+  </tr>
+  <tr>
+    <td>Alfreds Futterkiste</td>
+    <td>Maria Anders</td>
+    <td>Germany</td>
+  </tr>
+  <tr>
+    <td>Berglunds snabbköp</td>
+    <td>Christina Berglund</td>
+    <td>Sweden</td>
+  </tr>
+  <tr>
+    <td>Centro comercial Moctezuma</td>
+    <td>Francisco Chang</td>
+    <td>Mexico</td>
+  </tr>
+  <tr>
+    <td>Ernst Handel</td>
+    <td>Roland Mendel</td>
+    <td>Austria</td>
+  </tr>
+  <tr>
+    <td>Island Trading</td>
+    <td>Helen Bennett</td>
+    <td>UK</td>
+  </tr>
+  <tr>
+    <td>Königlich Essen</td>
+    <td>Philip Cramer</td>
+    <td>Germany</td>
+  </tr>
+  <tr>
+    <td>Laughing Bacchus Winecellars</td>
+    <td>Yoshi Tannamuri</td>
+    <td>Canada</td>
+  </tr>
+  <tr>
+    <td>Magazzini Alimentari Riuniti</td>
+    <td>Giovanni Rovelli</td>
+    <td>Italy</td>
+  </tr>
+  <tr>
+    <td>North/South</td>
+    <td>Simon Crowther</td>
+    <td>UK</td>
+  </tr>
+  <tr>
+    <td>Paris spécialités</td>
+    <td>Marie Bertrand</td>
+    <td>France</td>
+  </tr>
+</table>
+
+	<center></body>
+</html>
+
+<script>
+
+//jQuery time
+var current_fs, next_fs, previous_fs; //fieldsets
+var left, opacity, scale; //fieldset properties which we will animate
+var animating; //flag to prevent quick multi-click glitches
+
+$(".next").click(function(){
+	if(animating) return false;
+	animating = true;
+	
+	current_fs = $(this).parent();
+	next_fs = $(this).parent().next();
+	
+	//activate next step on progressbar using the index of next_fs
+	$("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+	
+	//show the next fieldset
+	next_fs.show(); 
+	//hide the current fieldset with style
+	current_fs.animate({opacity: 0}, {
+		step: function(now, mx) {
+			//as the opacity of current_fs reduces to 0 - stored in "now"
+			//1. scale current_fs down to 80%
+			scale = 1 - (1 - now) * 0.2;
+			//2. bring next_fs from the right(50%)
+			left = (now * 50)+"%";
+			//3. increase opacity of next_fs to 1 as it moves in
+			opacity = 1 - now;
+			current_fs.css({
+        'transform': 'scale('+scale+')',
+        'position': 'absolute'
+      });
+			next_fs.css({'left': left, 'opacity': opacity});
+		}, 
+		duration: 800, 
+		complete: function(){
+			current_fs.hide();
+			animating = false;
+		}, 
+		//this comes from the custom easing plugin
+		easing: 'easeInOutBack'
+	});
+});
+
+$(".previous").click(function(){
+	if(animating) return false;
+	animating = true;
+	
+	current_fs = $(this).parent();
+	previous_fs = $(this).parent().prev();
+	
+	//de-activate current step on progressbar
+	$("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+	
+	//show the previous fieldset
+	previous_fs.show(); 
+	//hide the current fieldset with style
+	current_fs.animate({opacity: 0}, {
+		step: function(now, mx) {
+			//as the opacity of current_fs reduces to 0 - stored in "now"
+			//1. scale previous_fs from 80% to 100%
+			scale = 0.8 + (1 - now) * 0.2;
+			//2. take current_fs to the right(50%) - from 0%
+			left = ((1-now) * 50)+"%";
+			//3. increase opacity of previous_fs to 1 as it moves in
+			opacity = 1 - now;
+			current_fs.css({'left': left});
+			previous_fs.css({'transform': 'scale('+scale+')', 'opacity': opacity});
+		}, 
+		duration: 800, 
+		complete: function(){
+			current_fs.hide();
+			animating = false;
+		}, 
+		//this comes from the custom easing plugin
+		easing: 'easeInOutBack'
+	});
+});
+
+$(".submit").click(function(){
+	return false;
+})
+
+$('#radioBtn a').on('click', function(){
+    var sel = $(this).data('title');
+    var tog = $(this).data('toggle');
+    $('#'+tog).prop('value', sel);
+    
+    $('a[data-toggle="'+tog+'"]').not('[data-title="'+sel+'"]').removeClass('active').addClass('notActive');
+    $('a[data-toggle="'+tog+'"][data-title="'+sel+'"]').removeClass('notActive').addClass('active');
+})
+</script>
